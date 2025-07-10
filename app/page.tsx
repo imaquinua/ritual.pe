@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { ShoppingCart, User, Search, Play, Star, Clock, Truck, Shield, ChefHat, Flame, MessageCircle, X, Plus, Minus, Menu } from 'lucide-react'
+import { ShoppingCart, User, Search, Play, Star, Clock, Truck, Shield, ChefHat, Flame, MessageCircle, X, Plus, Minus, Menu, Crown, Gift, Calendar, Award, Mail, Phone, Eye, EyeOff } from 'lucide-react'
 
 interface Product {
   id: number
@@ -33,6 +33,22 @@ const RitualEcommerce = () => {
   const [chatMessages, setChatMessages] = useState<{type: 'user' | 'chispa', text: string}[]>([])
   const [userMessage, setUserMessage] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [showRegister, setShowRegister] = useState(false)
+  const [showLogin, setShowLogin] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [user, setUser] = useState<{name: string, email: string, membershipLevel: string} | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
+  const [registerForm, setRegisterForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    confirmPassword: ''
+  })
+  const [loginForm, setLoginForm] = useState({
+    email: '',
+    password: ''
+  })
 
   const products: Product[] = [
     {
@@ -245,6 +261,47 @@ const RitualEcommerce = () => {
     setUserMessage('')
   }
 
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (registerForm.password !== registerForm.confirmPassword) {
+      alert('Las contraseñas no coinciden')
+      return
+    }
+    
+    // Simulate registration
+    const newUser = {
+      name: registerForm.name,
+      email: registerForm.email,
+      membershipLevel: 'Bronze'
+    }
+    
+    setUser(newUser)
+    setIsLoggedIn(true)
+    setShowRegister(false)
+    setRegisterForm({ name: '', email: '', phone: '', password: '', confirmPassword: '' })
+  }
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    // Simulate login
+    const loginUser = {
+      name: 'Usuario Demo',
+      email: loginForm.email,
+      membershipLevel: 'Gold'
+    }
+    
+    setUser(loginUser)
+    setIsLoggedIn(true)
+    setShowLogin(false)
+    setLoginForm({ email: '', password: '' })
+  }
+
+  const handleLogout = () => {
+    setUser(null)
+    setIsLoggedIn(false)
+  }
+
   const addToCart = (product: Product | any, quantity = 1) => {
     setCartItems(prev => {
       const existing = prev.find(item => item.id === product.id)
@@ -302,7 +359,38 @@ const RitualEcommerce = () => {
             
             <div className="flex items-center space-x-6">
               <Search className="w-6 h-6 text-ritual-stone-400 hover:text-ritual-gold cursor-pointer transition-colors duration-300" />
-              <User className="w-6 h-6 text-ritual-stone-400 hover:text-ritual-gold cursor-pointer transition-colors duration-300" />
+              {isLoggedIn ? (
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <Crown className="w-5 h-5 text-ritual-gold" />
+                    <span className="text-ritual-stone-200 font-medium">{user?.name}</span>
+                    <span className="text-xs bg-ritual-gold text-ritual-stone-950 px-2 py-1 rounded-full font-bold">
+                      {user?.membershipLevel}
+                    </span>
+                  </div>
+                  <button 
+                    onClick={handleLogout}
+                    className="text-ritual-stone-400 hover:text-ritual-gold transition-colors duration-300 text-sm"
+                  >
+                    Salir
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-4">
+                  <button 
+                    onClick={() => setShowLogin(true)}
+                    className="text-ritual-stone-400 hover:text-ritual-gold transition-colors duration-300 text-sm font-medium"
+                  >
+                    Iniciar Sesión
+                  </button>
+                  <button 
+                    onClick={() => setShowRegister(true)}
+                    className="bg-ritual-gold text-ritual-stone-950 px-4 py-2 rounded-lg font-bold text-sm hover:bg-ritual-gold/90 transition-colors duration-300"
+                  >
+                    Registrarse
+                  </button>
+                </div>
+              )}
               <button 
                 onClick={() => setShowCart(true)}
                 className="relative p-2 text-ritual-stone-400 hover:text-ritual-gold transition-colors duration-300"
@@ -543,6 +631,137 @@ const RitualEcommerce = () => {
         </div>
       </section>
 
+      {/* Club Exclusivo Section */}
+      <section id="club" className="py-24 bg-gradient-to-br from-ritual-stone-950 via-ritual-stone-900 to-ritual-stone-950">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl lg:text-6xl font-bold mb-6 tracking-wider">
+              <span className="text-ritual-stone-100">CLUB</span>
+              <span className="text-gradient"> EXCLUSIVO</span>
+            </h2>
+            <p className="text-xl text-ritual-stone-400 max-w-3xl mx-auto leading-relaxed">
+              Únete a la élite de los maestros parrilleros. Beneficios únicos, acceso prioritario y experiencias exclusivas.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+            {/* Bronze Membership */}
+            <div className="bg-gradient-to-br from-amber-900/20 to-amber-800/20 rounded-2xl p-8 border border-amber-600/30 hover:border-amber-500 transition-all duration-300 transform hover:scale-105">
+              <div className="flex items-center justify-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-amber-700 rounded-full flex items-center justify-center">
+                  <Crown className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-center mb-4 text-amber-400">BRONZE</h3>
+              <p className="text-center text-ritual-stone-300 mb-6">El inicio de tu ritual</p>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center text-ritual-stone-300">
+                  <Award className="w-5 h-5 text-amber-500 mr-3" />
+                  5% descuento en todos los cortes
+                </li>
+                <li className="flex items-center text-ritual-stone-300">
+                  <Gift className="w-5 h-5 text-amber-500 mr-3" />
+                  Recetas exclusivas mensuales
+                </li>
+                <li className="flex items-center text-ritual-stone-300">
+                  <Calendar className="w-5 h-5 text-amber-500 mr-3" />
+                  Acceso a eventos virtuales
+                </li>
+              </ul>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-amber-400 mb-4">GRATIS</p>
+                <p className="text-sm text-ritual-stone-400">Con tu primera compra</p>
+              </div>
+            </div>
+
+            {/* Silver Membership */}
+            <div className="bg-gradient-to-br from-slate-700/20 to-slate-600/20 rounded-2xl p-8 border border-slate-500/30 hover:border-slate-400 transition-all duration-300 transform hover:scale-105">
+              <div className="flex items-center justify-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-slate-500 to-slate-600 rounded-full flex items-center justify-center">
+                  <Crown className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-center mb-4 text-slate-400">SILVER</h3>
+              <p className="text-center text-ritual-stone-300 mb-6">Eleva tu experiencia</p>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center text-ritual-stone-300">
+                  <Award className="w-5 h-5 text-slate-400 mr-3" />
+                  10% descuento en todos los cortes
+                </li>
+                <li className="flex items-center text-ritual-stone-300">
+                  <Gift className="w-5 h-5 text-slate-400 mr-3" />
+                  Envío gratuito en pedidos +S/200
+                </li>
+                <li className="flex items-center text-ritual-stone-300">
+                  <Calendar className="w-5 h-5 text-slate-400 mr-3" />
+                  Masterclass presenciales
+                </li>
+                <li className="flex items-center text-ritual-stone-300">
+                  <Flame className="w-5 h-5 text-slate-400 mr-3" />
+                  Consultoría personal con Chispa
+                </li>
+              </ul>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-slate-400 mb-4">S/ 89</p>
+                <p className="text-sm text-ritual-stone-400">Por mes</p>
+              </div>
+            </div>
+
+            {/* Gold Membership */}
+            <div className="bg-gradient-to-br from-ritual-gold/20 to-yellow-600/20 rounded-2xl p-8 border border-ritual-gold/50 hover:border-ritual-gold transition-all duration-300 transform hover:scale-105 ring-2 ring-ritual-gold/20">
+              <div className="flex items-center justify-center mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-ritual-gold to-yellow-600 rounded-full flex items-center justify-center">
+                  <Crown className="w-8 h-8 text-white" />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-center mb-4 text-ritual-gold">GOLD</h3>
+              <p className="text-center text-ritual-stone-300 mb-6">La experiencia suprema</p>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center text-ritual-stone-300">
+                  <Award className="w-5 h-5 text-ritual-gold mr-3" />
+                  20% descuento en todos los cortes
+                </li>
+                <li className="flex items-center text-ritual-stone-300">
+                  <Gift className="w-5 h-5 text-ritual-gold mr-3" />
+                  Envío gratuito siempre
+                </li>
+                <li className="flex items-center text-ritual-stone-300">
+                  <Calendar className="w-5 h-5 text-ritual-gold mr-3" />
+                  Eventos exclusivos VIP
+                </li>
+                <li className="flex items-center text-ritual-stone-300">
+                  <Flame className="w-5 h-5 text-ritual-gold mr-3" />
+                  Línea directa con maestros
+                </li>
+                <li className="flex items-center text-ritual-stone-300">
+                  <Star className="w-5 h-5 text-ritual-gold mr-3" />
+                  Cortes premium limitados
+                </li>
+              </ul>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-ritual-gold mb-4">S/ 199</p>
+                <p className="text-sm text-ritual-stone-400">Por mes</p>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Section */}
+          <div className="text-center">
+            <h3 className="text-3xl font-bold mb-6">¿Listo para unirte a la élite?</h3>
+            <p className="text-ritual-stone-400 mb-8 max-w-2xl mx-auto">
+              Cada nivel del Club Exclusivo te acerca más a la maestría parrillera. 
+              Beneficios únicos, conocimiento experto y una comunidad apasionada te esperan.
+            </p>
+            <button 
+              onClick={() => setShowRegister(true)}
+              className="bg-gradient-to-r from-ritual-gold to-yellow-600 hover:from-ritual-gold/90 hover:to-yellow-500 text-ritual-stone-950 px-12 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl"
+            >
+              Comenzar Mi Ritual
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* Cart Sidebar */}
       {showCart && (
         <div className="fixed inset-0 z-50 overflow-hidden">
@@ -706,6 +925,208 @@ const RitualEcommerce = () => {
           </div>
         )}
       </div>
+
+      {/* Register Modal */}
+      {showRegister && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          <div className="absolute inset-0 bg-ritual-stone-950/90 backdrop-blur-sm" onClick={() => setShowRegister(false)} />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="bg-gradient-to-br from-ritual-stone-900 to-ritual-stone-800 rounded-2xl shadow-2xl w-full max-w-md border border-ritual-gold/20 animate-slide-up">
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-ritual-gold">Crear Cuenta</h2>
+                  <button 
+                    onClick={() => setShowRegister(false)}
+                    className="p-2 hover:bg-ritual-stone-700 rounded-lg transition-colors"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+                
+                <form onSubmit={handleRegister} className="space-y-6">
+                  <div>
+                    <label className="block text-ritual-stone-300 text-sm font-medium mb-2">
+                      Nombre Completo
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={registerForm.name}
+                      onChange={(e) => setRegisterForm({...registerForm, name: e.target.value})}
+                      className="w-full bg-ritual-stone-800 text-white p-3 rounded-lg border border-ritual-stone-600 focus:border-ritual-gold focus:outline-none transition-colors"
+                      placeholder="Tu nombre completo"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-ritual-stone-300 text-sm font-medium mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={registerForm.email}
+                      onChange={(e) => setRegisterForm({...registerForm, email: e.target.value})}
+                      className="w-full bg-ritual-stone-800 text-white p-3 rounded-lg border border-ritual-stone-600 focus:border-ritual-gold focus:outline-none transition-colors"
+                      placeholder="tu@email.com"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-ritual-stone-300 text-sm font-medium mb-2">
+                      Teléfono
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      value={registerForm.phone}
+                      onChange={(e) => setRegisterForm({...registerForm, phone: e.target.value})}
+                      className="w-full bg-ritual-stone-800 text-white p-3 rounded-lg border border-ritual-stone-600 focus:border-ritual-gold focus:outline-none transition-colors"
+                      placeholder="+51 999 999 999"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-ritual-stone-300 text-sm font-medium mb-2">
+                      Contraseña
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        required
+                        value={registerForm.password}
+                        onChange={(e) => setRegisterForm({...registerForm, password: e.target.value})}
+                        className="w-full bg-ritual-stone-800 text-white p-3 rounded-lg border border-ritual-stone-600 focus:border-ritual-gold focus:outline-none transition-colors pr-12"
+                        placeholder="Contraseña segura"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 text-ritual-stone-400 hover:text-ritual-gold transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-ritual-stone-300 text-sm font-medium mb-2">
+                      Confirmar Contraseña
+                    </label>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={registerForm.confirmPassword}
+                      onChange={(e) => setRegisterForm({...registerForm, confirmPassword: e.target.value})}
+                      className="w-full bg-ritual-stone-800 text-white p-3 rounded-lg border border-ritual-stone-600 focus:border-ritual-gold focus:outline-none transition-colors"
+                      placeholder="Confirma tu contraseña"
+                    />
+                  </div>
+                  
+                  <button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-ritual-gold to-yellow-600 hover:from-ritual-gold/90 hover:to-yellow-500 text-ritual-stone-950 py-3 rounded-lg font-bold transition-all duration-300 transform hover:scale-105"
+                  >
+                    Crear Cuenta
+                  </button>
+                </form>
+                
+                <div className="mt-6 text-center">
+                  <p className="text-ritual-stone-400 text-sm">
+                    ¿Ya tienes cuenta?{' '}
+                    <button 
+                      onClick={() => {setShowRegister(false); setShowLogin(true)}}
+                      className="text-ritual-gold hover:text-ritual-gold/80 transition-colors"
+                    >
+                      Iniciar Sesión
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Login Modal */}
+      {showLogin && (
+        <div className="fixed inset-0 z-50 overflow-hidden">
+          <div className="absolute inset-0 bg-ritual-stone-950/90 backdrop-blur-sm" onClick={() => setShowLogin(false)} />
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="bg-gradient-to-br from-ritual-stone-900 to-ritual-stone-800 rounded-2xl shadow-2xl w-full max-w-md border border-ritual-gold/20 animate-slide-up">
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-ritual-gold">Iniciar Sesión</h2>
+                  <button 
+                    onClick={() => setShowLogin(false)}
+                    className="p-2 hover:bg-ritual-stone-700 rounded-lg transition-colors"
+                  >
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+                
+                <form onSubmit={handleLogin} className="space-y-6">
+                  <div>
+                    <label className="block text-ritual-stone-300 text-sm font-medium mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={loginForm.email}
+                      onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
+                      className="w-full bg-ritual-stone-800 text-white p-3 rounded-lg border border-ritual-stone-600 focus:border-ritual-gold focus:outline-none transition-colors"
+                      placeholder="tu@email.com"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-ritual-stone-300 text-sm font-medium mb-2">
+                      Contraseña
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        required
+                        value={loginForm.password}
+                        onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                        className="w-full bg-ritual-stone-800 text-white p-3 rounded-lg border border-ritual-stone-600 focus:border-ritual-gold focus:outline-none transition-colors pr-12"
+                        placeholder="Tu contraseña"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 text-ritual-stone-400 hover:text-ritual-gold transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-ritual-gold to-yellow-600 hover:from-ritual-gold/90 hover:to-yellow-500 text-ritual-stone-950 py-3 rounded-lg font-bold transition-all duration-300 transform hover:scale-105"
+                  >
+                    Iniciar Sesión
+                  </button>
+                </form>
+                
+                <div className="mt-6 text-center">
+                  <p className="text-ritual-stone-400 text-sm">
+                    ¿No tienes cuenta?{' '}
+                    <button 
+                      onClick={() => {setShowLogin(false); setShowRegister(true)}}
+                      className="text-ritual-gold hover:text-ritual-gold/80 transition-colors"
+                    >
+                      Crear Cuenta
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="bg-ritual-stone-900 py-16 border-t border-ritual-gold/20">
