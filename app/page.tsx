@@ -22,6 +22,17 @@ const RitualEcommerce = () => {
   // Products from Supabase
   const { products, loading: productsLoading, error: productsError } = useProducts()
   
+  // Debug logging
+  useEffect(() => {
+    console.log('🔍 Debug Info:')
+    console.log('Products loading:', productsLoading)
+    console.log('Products error:', productsError)
+    console.log('Products count:', products.length)
+    console.log('Products data:', products)
+    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+    console.log('Has Supabase Key:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  }, [products, productsLoading, productsError])
+  
   // Local state
   const [currentSlide, setCurrentSlide] = useState(0)
   const [cartItems, setCartItems] = useState<CartItem[]>([])
@@ -410,6 +421,17 @@ const RitualEcommerce = () => {
             </p>
           </div>
 
+          {/* Debug Info */}
+          <div className="bg-yellow-900 p-4 mb-8 rounded-lg text-black">
+            <h3 className="font-bold">🔍 DEBUG INFO:</h3>
+            <p>Loading: {productsLoading ? 'SÍ' : 'NO'}</p>
+            <p>Error: {productsError || 'Ninguno'}</p>
+            <p>Total Products: {products.length}</p>
+            <p>Carnes: {carnes.length}</p>
+            <p>Supabase URL: {process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Configurada' : 'NO CONFIGURADA'}</p>
+            <p>Supabase Key: {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Configurada' : 'NO CONFIGURADA'}</p>
+          </div>
+
           {productsLoading ? (
             <div className="text-center py-16">
               <p className="text-ritual-stone-400 text-lg">Cargando productos...</p>
@@ -417,6 +439,12 @@ const RitualEcommerce = () => {
           ) : productsError ? (
             <div className="text-center py-16">
               <p className="text-red-400 text-lg">Error: {productsError}</p>
+              <p className="text-ritual-stone-400 text-sm mt-2">Revisa la consola para más detalles</p>
+            </div>
+          ) : carnes.length === 0 ? (
+            <div className="text-center py-16">
+              <p className="text-yellow-400 text-lg">No se encontraron productos de carnes</p>
+              <p className="text-ritual-stone-400 text-sm mt-2">Total productos cargados: {products.length}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
@@ -772,6 +800,14 @@ const RitualEcommerce = () => {
             </div>
             
             <div className="flex-1 p-6 overflow-y-auto">
+              {/* Chat Debug Info */}
+              <div className="bg-yellow-900 p-3 mb-4 rounded-lg text-black text-sm">
+                <p><strong>🔥 CHISPA DEBUG:</strong></p>
+                <p>OpenAI Key: {process.env.OPENAI_API_KEY ? '✅ Configurada' : '❌ NO CONFIGURADA'}</p>
+                <p>API Endpoint: /api/chat</p>
+                <p>Mensajes: {chatMessages.length}</p>
+              </div>
+
               {chatMessages.length === 0 && (
                 <div className="text-center py-8 animate-fade-in">
                   <div className="w-16 h-16 bg-gradient-to-br from-ritual-gold to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
