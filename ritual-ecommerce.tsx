@@ -116,7 +116,7 @@ const RitualEcommerce = () => {
     delivery: "Tu pedido llegará en cadena de frío premium en 2-3 horas. Perfecto timing para preparar las brasas."
   };
 
-  const handleChispaChat = (message) => {
+  const handleChispaChat = (message: string) => {
     if (!message.trim()) return;
     
     setChatMessages(prev => [...prev, { type: 'user', text: message }]);

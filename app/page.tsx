@@ -180,7 +180,7 @@ const RitualEcommerce = () => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length)
     }, 6000)
     return () => clearInterval(timer)
-  }, [])
+  }, [heroSlides.length])
 
   const chispaResponses = {
     greeting: "¡Hola! Soy Chispa, tu maestro parrillero personal. He ayudado a más de 10,000 amantes de la parrilla a encontrar su corte perfecto. ¿Para cuántas personas será tu ritual?",
