@@ -11,6 +11,9 @@ Una experiencia de compra premium para cortes de carne selectos y accesorios de 
 - **Responsive design** para todos los dispositivos
 - **SEO optimizado** para mejor posicionamiento
 - **Chatbot IA** "Chispa" para asesoría personalizada
+- **Supabase** para base de datos y autenticación
+- **Dashboard de usuario** con historial de órdenes
+- **OpenAI GPT-3.5-turbo** para asistente inteligente
 
 ## 🛠️ Desarrollo
 
