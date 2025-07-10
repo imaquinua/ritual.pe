@@ -137,23 +137,50 @@ const RitualEcommerce = () => {
     { 
       id: 7, 
       name: "Chimichurri de Autor", 
+      subtitle: "Receta Secreta Premium",
       price: 35, 
+      originalPrice: 45,
+      weight: "250ml",
+      description: "Receta secreta con hierbas seleccionadas",
       image: "/img/cortes/foto8.jpg",
-      description: "Receta secreta con hierbas seleccionadas"
+      badge: "ARTESANAL",
+      cookTime: "Listo para usar",
+      serves: "4-6 personas",
+      origin: "Receta tradicional",
+      discount: "22%",
+      rating: 4.8
     },
     { 
       id: 8, 
       name: "Carbón Premium Oak", 
+      subtitle: "Roble Americano Selecto",
       price: 45, 
+      originalPrice: 55,
+      weight: "5kg",
+      description: "Carbón de roble americano, combustión perfecta",
       image: "/img/cortes/foto9.jpg",
-      description: "Carbón de roble americano, combustión perfecta"
+      badge: "PREMIUM",
+      cookTime: "Encendido rápido",
+      serves: "2-3 asados",
+      origin: "Roble americano",
+      discount: "18%",
+      rating: 4.9
     },
     { 
       id: 9, 
       name: "Kit Maestro Parrillero", 
+      subtitle: "Herramientas Profesionales",
       price: 189, 
+      originalPrice: 230,
+      weight: "3.2kg",
+      description: "Herramientas profesionales para el ritual perfecto",
       image: "/img/cortes/foto10.jpg",
-      description: "Herramientas profesionales para el ritual perfecto"
+      badge: "COMPLETO",
+      cookTime: "Uso permanente",
+      serves: "Uso ilimitado",
+      origin: "Acero inoxidable",
+      discount: "18%",
+      rating: 5.0
     }
   ]
 
