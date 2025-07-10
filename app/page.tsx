@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { ShoppingCart, User, Search, Play, Star, Clock, Truck, Shield, ChefHat, Flame, MessageCircle, X, Plus, Minus, Menu, Crown, Gift, Calendar, Award, Mail, Phone, Eye, EyeOff } from 'lucide-react'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useProducts } from '@/hooks/useProducts'
@@ -13,6 +14,8 @@ interface CartItem {
 }
 
 const RitualEcommerce = () => {
+  const router = useRouter()
+  
   // Auth context
   const { user, profile, loading: authLoading, signUp, signIn, signOut } = useAuthContext()
   
@@ -80,31 +83,41 @@ const RitualEcommerce = () => {
     lomo: "El Lomo Fino es pura elegancia. Temperatura ambiente 30 min antes, sella 2 min por lado, fuego medio 10-12 min. Punto perfecto a 52°C."
   }
 
-  const handleChispaChat = (message: string) => {
+  const handleChispaChat = async (message: string) => {
     if (!message.trim()) return
     
     setChatMessages(prev => [...prev, { type: 'user', text: message }])
-    
-    setTimeout(() => {
-      let response = chispaResponses.greeting
-      const lowerMessage = message.toLowerCase()
-      
-      if (lowerMessage.includes('recomend') || lowerMessage.includes('mejor')) {
-        response = chispaResponses.recommendation
-      } else if (lowerMessage.includes('cocin') || lowerMessage.includes('punto')) {
-        response = chispaResponses.cooking
-      } else if (lowerMessage.includes('deliver') || lowerMessage.includes('llega')) {
-        response = chispaResponses.delivery
-      } else if (lowerMessage.includes('tomahawk')) {
-        response = chispaResponses.tomahawk
-      } else if (lowerMessage.includes('lomo') || lowerMessage.includes('filet')) {
-        response = chispaResponses.lomo
-      }
-      
-      setChatMessages(prev => [...prev, { type: 'chispa', text: response }])
-    }, 1500)
-    
     setUserMessage('')
+    
+    // Add typing indicator
+    setChatMessages(prev => [...prev, { type: 'chispa', text: 'Chispa está pensando...' }])
+    
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }),
+      })
+      
+      const data = await response.json()
+      
+      // Remove typing indicator and add real response
+      setChatMessages(prev => {
+        const messages = prev.slice(0, -1) // Remove typing indicator
+        return [...messages, { type: 'chispa', text: data.response || 'Lo siento, no pude procesar tu consulta.' }]
+      })
+      
+    } catch (error) {
+      console.error('Error calling chat API:', error)
+      
+      // Fallback to basic response on error
+      setChatMessages(prev => {
+        const messages = prev.slice(0, -1) // Remove typing indicator
+        return [...messages, { type: 'chispa', text: '¡Hola! Soy Chispa, tu maestro parrillero. ¿En qué puedo ayudarte con tu ritual?' }]
+      })
+    }
   }
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -187,7 +200,7 @@ const RitualEcommerce = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-12">
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center">
                 <Image
                   src="/img/logo.png"
                   alt="RITUAL"
@@ -196,7 +209,6 @@ const RitualEcommerce = () => {
                   className="h-10 w-auto"
                   priority
                 />
-                <span className="text-ritual-gold text-xl font-bold">.pe</span>
               </div>
               <nav className="hidden lg:flex space-x-8">
                 <a href="#cortes" className="text-ritual-stone-300 hover:text-ritual-gold transition-all duration-300 font-medium">Cortes Nobles</a>
@@ -210,15 +222,18 @@ const RitualEcommerce = () => {
               <Search className="w-6 h-6 text-ritual-stone-400 hover:text-ritual-gold cursor-pointer transition-colors duration-300" />
               {user ? (
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => router.push('/dashboard')}
+                    className="flex items-center space-x-2 text-ritual-stone-200 hover:text-ritual-gold transition-colors duration-300"
+                  >
                     <Crown className="w-5 h-5 text-ritual-gold" />
-                    <span className="text-ritual-stone-200 font-medium">{profile?.name || user.email}</span>
+                    <span className="font-medium">{profile?.name || user.email}</span>
                     <span className="text-xs bg-ritual-gold text-ritual-stone-950 px-2 py-1 rounded-full font-bold">
                       {profile?.membership_level || 'Bronze'}
                     </span>
-                  </div>
+                  </button>
                   <button 
-                    onClick={handleLogout}
+                    onClick={signOut}
                     className="text-ritual-stone-400 hover:text-ritual-gold transition-colors duration-300 text-sm"
                   >
                     Salir
@@ -227,13 +242,13 @@ const RitualEcommerce = () => {
               ) : (
                 <div className="flex items-center space-x-4">
                   <button 
-                    onClick={() => setShowLogin(true)}
+                    onClick={() => router.push('/login')}
                     className="text-ritual-stone-400 hover:text-ritual-gold transition-colors duration-300 text-sm font-medium"
                   >
                     Iniciar Sesión
                   </button>
                   <button 
-                    onClick={() => setShowRegister(true)}
+                    onClick={() => router.push('/login')}
                     className="bg-ritual-gold text-ritual-stone-950 px-4 py-2 rounded-lg font-bold text-sm hover:bg-ritual-gold/90 transition-colors duration-300"
                   >
                     Registrarse
@@ -992,7 +1007,7 @@ const RitualEcommerce = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <div className="md:col-span-2">
-              <div className="flex items-center space-x-3 mb-6">
+              <div className="flex items-center mb-6">
                 <Image
                   src="/img/logo.png"
                   alt="RITUAL"
@@ -1000,7 +1015,6 @@ const RitualEcommerce = () => {
                   height={40}
                   className="h-10 w-auto"
                 />
-                <span className="text-ritual-gold text-xl font-bold">.pe</span>
               </div>
               <p className="text-ritual-stone-400 text-lg leading-relaxed mb-6 max-w-md">
                 El arte del ritual parrillero. Cortes premium para los verdaderos maestros de la brasa. 
