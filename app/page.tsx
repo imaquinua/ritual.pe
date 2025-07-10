@@ -93,6 +93,8 @@ const RitualEcommerce = () => {
     setChatMessages(prev => [...prev, { type: 'chispa', text: 'Chispa está pensando...' }])
     
     try {
+      console.log('Calling chat API with message:', message)
+      
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -101,7 +103,16 @@ const RitualEcommerce = () => {
         body: JSON.stringify({ message }),
       })
       
+      console.log('API response status:', response.status)
+      
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('API error response:', errorText)
+        throw new Error(`HTTP ${response.status}: ${errorText}`)
+      }
+      
       const data = await response.json()
+      console.log('API response data:', data)
       
       // Remove typing indicator and add real response
       setChatMessages(prev => {
@@ -112,10 +123,21 @@ const RitualEcommerce = () => {
     } catch (error) {
       console.error('Error calling chat API:', error)
       
+      // More detailed fallback message based on error type
+      let fallbackMessage = '¡Hola! Soy Chispa, tu maestro parrillero. ¿En qué puedo ayudarte con tu ritual?'
+      
+      if (error instanceof Error) {
+        if (error.message.includes('500')) {
+          fallbackMessage = 'Disculpa, tengo problemas técnicos. Pero puedo ayudarte: ¿necesitas consejos de parrilla?'
+        } else if (error.message.includes('404')) {
+          fallbackMessage = 'Hay un problema de configuración. Mientras tanto, pregúntame sobre técnicas de parrilla.'
+        }
+      }
+      
       // Fallback to basic response on error
       setChatMessages(prev => {
         const messages = prev.slice(0, -1) // Remove typing indicator
-        return [...messages, { type: 'chispa', text: '¡Hola! Soy Chispa, tu maestro parrillero. ¿En qué puedo ayudarte con tu ritual?' }]
+        return [...messages, { type: 'chispa', text: fallbackMessage }]
       })
     }
   }
