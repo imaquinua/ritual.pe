@@ -3,29 +3,23 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { ShoppingCart, User, Search, Play, Star, Clock, Truck, Shield, ChefHat, Flame, MessageCircle, X, Plus, Minus, Menu, Crown, Gift, Calendar, Award, Mail, Phone, Eye, EyeOff } from 'lucide-react'
+import { useAuthContext } from '@/contexts/AuthContext'
+import { useProducts } from '@/hooks/useProducts'
+import type { Product } from '@/lib/supabase'
 
-interface Product {
-  id: number
-  name: string
-  subtitle: string
-  price: number
-  originalPrice: number
-  weight: string
-  description: string
-  image: string
-  badge: string
-  cookTime: string
-  serves: string
-  origin: string
-  discount: string
-  rating: number
-}
-
-interface CartItem extends Product {
+interface CartItem {
+  product: Product
   quantity: number
 }
 
 const RitualEcommerce = () => {
+  // Auth context
+  const { user, profile, loading: authLoading, signUp, signIn, signOut } = useAuthContext()
+  
+  // Products from Supabase
+  const { products, loading: productsLoading, error: productsError } = useProducts()
+  
+  // Local state
   const [currentSlide, setCurrentSlide] = useState(0)
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [showCart, setShowCart] = useState(false)
@@ -35,8 +29,6 @@ const RitualEcommerce = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showRegister, setShowRegister] = useState(false)
   const [showLogin, setShowLogin] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [user, setUser] = useState<{name: string, email: string, membershipLevel: string} | null>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [registerForm, setRegisterForm] = useState({
     name: '',
@@ -50,155 +42,9 @@ const RitualEcommerce = () => {
     password: ''
   })
 
-  const products: Product[] = [
-    {
-      id: 1,
-      name: "Picaña Premium",
-      subtitle: "El Legendario Corte Brasileño",
-      price: 299,
-      originalPrice: 349,
-      weight: "2.2kg",
-      description: "Corte brasileño de excelencia. Jugosidad excepcional con un sabor profundo que conquista desde el primer bocado.",
-      image: "/img/cortes/foto1.jpg",
-      badge: "BESTSELLER",
-      cookTime: "25-30 min",
-      serves: "6-8 personas",
-      origin: "Angus Argentino Premium",
-      discount: "15%",
-      rating: 4.9
-    },
-    {
-      id: 2,
-      name: "Bife Ancho",
-      subtitle: "Ribeye de Autor",
-      price: 299,
-      originalPrice: 349,
-      weight: "2.2kg",
-      description: "Veteado perfecto que garantiza una experiencia sensorial única. El corte preferido por los conocedores.",
-      image: "/img/cortes/foto3.jpg",
-      badge: "PREMIUM",
-      cookTime: "20-25 min",
-      serves: "6-8 personas",
-      origin: "Hereford Premium",
-      discount: "15%",
-      rating: 4.8
-    },
-    {
-      id: 3,
-      name: "Bife Angosto",
-      subtitle: "New York Strip Selecto",
-      price: 299,
-      originalPrice: 349,
-      weight: "2.2kg",
-      description: "Equilibrio magistral entre terneza y sabor. Un clásico reinventado para paladares exigentes.",
-      image: "/img/cortes/foto4.jpg",
-      badge: "FAVORITO",
-      cookTime: "18-22 min",
-      serves: "6-8 personas",
-      origin: "Angus Selecto",
-      discount: "15%",
-      rating: 4.7
-    },
-    {
-      id: 4,
-      name: "Tomahawk",
-      subtitle: "El Rey de la Parrilla",
-      price: 450,
-      originalPrice: 520,
-      weight: "3.5kg",
-      description: "Imponente corte con hueso que impresiona por su presentación y sabor excepcional.",
-      image: "/img/cortes/foto5.jpg",
-      badge: "EXCLUSIVO",
-      cookTime: "35-40 min",
-      serves: "8-10 personas",
-      origin: "Wagyu Premium",
-      discount: "13%",
-      rating: 5.0
-    },
-    {
-      id: 5,
-      name: "Lomo Fino",
-      subtitle: "Filet Mignon Supremo",
-      price: 380,
-      originalPrice: 420,
-      weight: "1.8kg",
-      description: "La máxima expresión de terneza. Corte noble para momentos especiales.",
-      image: "/img/cortes/foto6.jpg",
-      badge: "NOBLE",
-      cookTime: "15-20 min",
-      serves: "4-6 personas",
-      origin: "Angus Premium",
-      discount: "10%",
-      rating: 4.9
-    },
-    {
-      id: 6,
-      name: "Asado de Tira",
-      subtitle: "Tradición Parrillera",
-      price: 220,
-      originalPrice: 260,
-      weight: "2.8kg",
-      description: "Corte tradicional que despierta los sentidos. Perfecto para reuniones familiares.",
-      image: "/img/cortes/foto7.jpg",
-      badge: "TRADICIONAL",
-      cookTime: "30-35 min",
-      serves: "8-10 personas",
-      origin: "Criollo Premium",
-      discount: "15%",
-      rating: 4.6
-    }
-  ]
-
-  const complementos = [
-    { 
-      id: 7, 
-      name: "Chimichurri de Autor", 
-      subtitle: "Receta Secreta Premium",
-      price: 35, 
-      originalPrice: 45,
-      weight: "250ml",
-      description: "Receta secreta con hierbas seleccionadas",
-      image: "/img/cortes/foto8.jpg",
-      badge: "ARTESANAL",
-      cookTime: "Listo para usar",
-      serves: "4-6 personas",
-      origin: "Receta tradicional",
-      discount: "22%",
-      rating: 4.8
-    },
-    { 
-      id: 8, 
-      name: "Carbón Premium Oak", 
-      subtitle: "Roble Americano Selecto",
-      price: 45, 
-      originalPrice: 55,
-      weight: "5kg",
-      description: "Carbón de roble americano, combustión perfecta",
-      image: "/img/cortes/foto9.jpg",
-      badge: "PREMIUM",
-      cookTime: "Encendido rápido",
-      serves: "2-3 asados",
-      origin: "Roble americano",
-      discount: "18%",
-      rating: 4.9
-    },
-    { 
-      id: 9, 
-      name: "Kit Maestro Parrillero", 
-      subtitle: "Herramientas Profesionales",
-      price: 189, 
-      originalPrice: 230,
-      weight: "3.2kg",
-      description: "Herramientas profesionales para el ritual perfecto",
-      image: "/img/cortes/foto10.jpg",
-      badge: "COMPLETO",
-      cookTime: "Uso permanente",
-      serves: "Uso ilimitado",
-      origin: "Acero inoxidable",
-      discount: "18%",
-      rating: 5.0
-    }
-  ]
+  // Separate products by category
+  const carnes = products.filter(product => product.category === 'carnes')
+  const complementos = products.filter(product => product.category === 'complementos')
 
   const heroSlides = [
     {
@@ -261,75 +107,78 @@ const RitualEcommerce = () => {
     setUserMessage('')
   }
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
     if (registerForm.password !== registerForm.confirmPassword) {
       alert('Las contraseñas no coinciden')
       return
     }
     
-    // Simulate registration
-    const newUser = {
-      name: registerForm.name,
-      email: registerForm.email,
-      membershipLevel: 'Bronze'
+    const { data, error } = await signUp(
+      registerForm.email, 
+      registerForm.password, 
+      { 
+        name: registerForm.name, 
+        phone: registerForm.phone 
+      }
+    )
+
+    if (error) {
+      alert(`Error: ${error.message}`)
+      return
     }
-    
-    setUser(newUser)
-    setIsLoggedIn(true)
+
+    alert('¡Cuenta creada! Revisa tu email para confirmar tu cuenta.')
     setShowRegister(false)
     setRegisterForm({ name: '', email: '', phone: '', password: '', confirmPassword: '' })
   }
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    // Simulate login
-    const loginUser = {
-      name: 'Usuario Demo',
-      email: loginForm.email,
-      membershipLevel: 'Gold'
+    const { data, error } = await signIn(loginForm.email, loginForm.password)
+
+    if (error) {
+      alert(`Error: ${error.message}`)
+      return
     }
-    
-    setUser(loginUser)
-    setIsLoggedIn(true)
+
     setShowLogin(false)
     setLoginForm({ email: '', password: '' })
   }
 
-  const handleLogout = () => {
-    setUser(null)
-    setIsLoggedIn(false)
+  const handleLogout = async () => {
+    await signOut()
   }
 
-  const addToCart = (product: Product | any, quantity = 1) => {
+  const addToCart = (product: Product, quantity = 1) => {
     setCartItems(prev => {
-      const existing = prev.find(item => item.id === product.id)
+      const existing = prev.find(item => item.product.id === product.id)
       if (existing) {
         return prev.map(item => 
-          item.id === product.id 
+          item.product.id === product.id 
             ? { ...item, quantity: item.quantity + quantity }
             : item
         )
       }
-      return [...prev, { ...product, quantity }]
+      return [...prev, { product, quantity }]
     })
   }
 
   const updateQuantity = (productId: number, newQuantity: number) => {
     if (newQuantity === 0) {
-      setCartItems(prev => prev.filter(item => item.id !== productId))
+      setCartItems(prev => prev.filter(item => item.product.id !== productId))
     } else {
       setCartItems(prev =>
         prev.map(item =>
-          item.id === productId ? { ...item, quantity: newQuantity } : item
+          item.product.id === productId ? { ...item, quantity: newQuantity } : item
         )
       )
     }
   }
 
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0)
-  const totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+  const totalPrice = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
 
   return (
     <div className="min-h-screen bg-ritual-stone-950 text-ritual-stone-100 font-sans">
@@ -359,13 +208,13 @@ const RitualEcommerce = () => {
             
             <div className="flex items-center space-x-6">
               <Search className="w-6 h-6 text-ritual-stone-400 hover:text-ritual-gold cursor-pointer transition-colors duration-300" />
-              {isLoggedIn ? (
+              {user ? (
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
                     <Crown className="w-5 h-5 text-ritual-gold" />
-                    <span className="text-ritual-stone-200 font-medium">{user?.name}</span>
+                    <span className="text-ritual-stone-200 font-medium">{profile?.name || user.email}</span>
                     <span className="text-xs bg-ritual-gold text-ritual-stone-950 px-2 py-1 rounded-full font-bold">
-                      {user?.membershipLevel}
+                      {profile?.membership_level || 'Bronze'}
                     </span>
                   </div>
                   <button 
@@ -524,72 +373,82 @@ const RitualEcommerce = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {products.map((product) => (
-              <div key={product.id} className="group card-hover">
-                <div className="bg-gradient-to-br from-ritual-stone-900 to-ritual-stone-800 rounded-2xl overflow-hidden border border-ritual-stone-700 hover:border-ritual-gold/50 transition-all duration-500 shadow-xl">
-                  <div className="relative overflow-hidden">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      width={400}
-                      height={320}
-                      className="w-full h-80 object-cover image-zoom"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <span className="bg-gradient-to-r from-ritual-red to-ritual-red/80 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                        {product.badge}
-                      </span>
-                    </div>
-                    <div className="absolute top-4 right-4">
-                      <span className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                        -{product.discount}
-                      </span>
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  
-                  <div className="p-8">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-2xl font-bold">{product.name}</h3>
-                      <div className="flex items-center text-ritual-gold">
-                        <Star className="w-5 h-5 fill-current" />
-                        <span className="ml-2 text-sm font-semibold">{product.rating}</span>
+          {productsLoading ? (
+            <div className="text-center py-16">
+              <p className="text-ritual-stone-400 text-lg">Cargando productos...</p>
+            </div>
+          ) : productsError ? (
+            <div className="text-center py-16">
+              <p className="text-red-400 text-lg">Error: {productsError}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+              {carnes.map((product) => (
+                <div key={product.id} className="group card-hover">
+                  <div className="bg-gradient-to-br from-ritual-stone-900 to-ritual-stone-800 rounded-2xl overflow-hidden border border-ritual-stone-700 hover:border-ritual-gold/50 transition-all duration-500 shadow-xl">
+                    <div className="relative overflow-hidden">
+                      <Image
+                        src={product.image_url}
+                        alt={product.name}
+                        width={400}
+                        height={320}
+                        className="w-full h-80 object-cover image-zoom"
+                      />
+                      <div className="absolute top-4 left-4">
+                        <span className="bg-gradient-to-r from-ritual-red to-ritual-red/80 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                          {product.badge}
+                        </span>
                       </div>
+                      <div className="absolute top-4 right-4">
+                        <span className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                          -{product.discount}
+                        </span>
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
                     
-                    <p className="text-ritual-gold text-lg mb-4 font-medium">{product.subtitle}</p>
-                    <p className="text-ritual-stone-400 mb-6 leading-relaxed">{product.description}</p>
-                    
-                    <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-                      <div className="bg-ritual-stone-800 p-3 rounded-lg">
-                        <span className="text-ritual-stone-400 block">Peso</span>
-                        <span className="text-white font-semibold">{product.weight}</span>
+                    <div className="p-8">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-2xl font-bold">{product.name}</h3>
+                        <div className="flex items-center text-ritual-gold">
+                          <Star className="w-5 h-5 fill-current" />
+                          <span className="ml-2 text-sm font-semibold">{product.rating}</span>
+                        </div>
                       </div>
-                      <div className="bg-ritual-stone-800 p-3 rounded-lg">
-                        <span className="text-ritual-stone-400 block">Rinde</span>
-                        <span className="text-white font-semibold">{product.serves}</span>
+                      
+                      <p className="text-ritual-gold text-lg mb-4 font-medium">{product.subtitle}</p>
+                      <p className="text-ritual-stone-400 mb-6 leading-relaxed">{product.description}</p>
+                      
+                      <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+                        <div className="bg-ritual-stone-800 p-3 rounded-lg">
+                          <span className="text-ritual-stone-400 block">Peso</span>
+                          <span className="text-white font-semibold">{product.weight}</span>
+                        </div>
+                        <div className="bg-ritual-stone-800 p-3 rounded-lg">
+                          <span className="text-ritual-stone-400 block">Rinde</span>
+                          <span className="text-white font-semibold">{product.serves}</span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="flex items-center justify-between mb-6">
-                      <div>
-                        <span className="text-3xl font-bold text-white">S/ {product.price}</span>
-                        <span className="text-ritual-stone-500 line-through ml-3 text-lg">S/ {product.originalPrice}</span>
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <span className="text-3xl font-bold text-white">S/ {product.price}</span>
+                          <span className="text-ritual-stone-500 line-through ml-3 text-lg">S/ {product.original_price}</span>
+                        </div>
                       </div>
-                    </div>
 
-                    <button
-                      onClick={() => addToCart(product)}
-                      className="w-full bg-gradient-to-r from-ritual-red to-ritual-red/80 hover:from-ritual-red/90 hover:to-ritual-red text-white py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg btn-premium"
-                    >
-                      Agregar al Ritual
-                    </button>
+                      <button
+                        onClick={() => addToCart(product)}
+                        className="w-full bg-gradient-to-r from-ritual-red to-ritual-red/80 hover:from-ritual-red/90 hover:to-ritual-red text-white py-4 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 shadow-lg btn-premium"
+                      >
+                        Agregar al Ritual
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -609,7 +468,7 @@ const RitualEcommerce = () => {
               <div key={item.id} className="bg-ritual-stone-950 rounded-xl p-8 text-center border border-ritual-stone-700 hover:border-ritual-gold/50 transition-all duration-300 transform hover:scale-105 group card-hover">
                 <div className="relative overflow-hidden rounded-lg mb-6">
                   <Image
-                    src={item.image}
+                    src={item.image_url}
                     alt={item.name}
                     width={300}
                     height={200}
@@ -789,28 +648,28 @@ const RitualEcommerce = () => {
                 ) : (
                   <div className="space-y-6">
                     {cartItems.map((item) => (
-                      <div key={item.id} className="flex items-center space-x-4 bg-ritual-stone-950 p-6 rounded-xl border border-ritual-stone-700">
+                      <div key={item.product.id} className="flex items-center space-x-4 bg-ritual-stone-950 p-6 rounded-xl border border-ritual-stone-700">
                         <Image
-                          src={item.image || "/img/cortes/foto1.jpg"}
-                          alt={item.name}
+                          src={item.product.image_url || "/img/cortes/foto1.jpg"}
+                          alt={item.product.name}
                           width={80}
                           height={80}
                           className="w-20 h-20 object-cover rounded-lg"
                         />
                         <div className="flex-1">
-                          <h3 className="font-bold text-lg">{item.name}</h3>
-                          <p className="text-ritual-gold font-semibold">S/ {item.price}</p>
+                          <h3 className="font-bold text-lg">{item.product.name}</h3>
+                          <p className="text-ritual-gold font-semibold">S/ {item.product.price}</p>
                         </div>
                         <div className="flex items-center space-x-3">
                           <button 
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                             className="w-10 h-10 bg-ritual-stone-700 hover:bg-ritual-stone-600 rounded-full flex items-center justify-center transition-colors"
                           >
                             <Minus className="w-5 h-5" />
                           </button>
                           <span className="w-8 text-center font-semibold">{item.quantity}</span>
                           <button 
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                             className="w-10 h-10 bg-ritual-stone-700 hover:bg-ritual-stone-600 rounded-full flex items-center justify-center transition-colors"
                           >
                             <Plus className="w-5 h-5" />

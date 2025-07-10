@@ -1,0 +1,11 @@
+id,user_id,status,total,delivery_address,delivery_phone,delivery_notes,created_at,updated_at
+1,550e8400-e29b-41d4-a716-446655440001,delivered,598.00,"Av. Javier Prado 1250, San Isidro, Lima","+51 999 123 456","Tocar el timbre, departamento 302",2024-02-01 10:30:00,2024-02-01 18:45:00
+2,550e8400-e29b-41d4-a716-446655440002,delivered,344.00,"Calle Las Flores 456, Miraflores, Lima","+51 999 234 567","Dejar con portería si no hay nadie",2024-02-03 14:15:00,2024-02-03 20:30:00
+3,550e8400-e29b-41d4-a716-446655440003,delivered,219.00,"Jr. Cusco 789, Cercado de Lima, Lima","+51 999 345 678","",2024-02-05 09:45:00,2024-02-05 16:20:00
+4,550e8400-e29b-41d4-a716-446655440001,delivered,450.00,"Av. Javier Prado 1250, San Isidro, Lima","+51 999 123 456","Pedido para parrillada familiar",2024-02-08 16:20:00,2024-02-08 21:15:00
+5,550e8400-e29b-41d4-a716-446655440004,preparing,725.00,"Av. El Bosque 321, San Borja, Lima","+51 999 456 789","Entregar después de las 18:00",2024-02-25 11:30:00,2024-02-25 11:30:00
+6,550e8400-e29b-41d4-a716-446655440005,confirmed,380.00,"Calle Los Olivos 654, La Molina, Lima","+51 999 567 890","Casa color beige con rejas negras",2024-02-25 13:45:00,2024-02-25 14:00:00
+7,550e8400-e29b-41d4-a716-446655440006,pending,234.00,"Av. Salaverry 987, Jesús María, Lima","+51 999 678 901","",2024-02-25 15:20:00,2024-02-25 15:20:00
+8,550e8400-e29b-41d4-a716-446655440007,delivering,519.00,"Malecón de la Reserva 147, Miraflores, Lima","+51 999 789 012","Edificio Torre Azul, piso 8",2024-02-25 17:10:00,2024-02-25 18:30:00
+9,550e8400-e29b-41d4-a716-446655440008,confirmed,299.00,"Av. Universitaria 258, Los Olivos, Lima","+51 999 890 123","Coordinar horario de entrega",2024-02-25 19:00:00,2024-02-25 19:15:00
+10,550e8400-e29b-41d4-a716-446655440009,pending,164.00,"Calle Real 741, San Miguel, Lima","+51 999 901 234","Timbre no funciona, llamar por teléfono",2024-02-25 20:30:00,2024-02-25 20:30:00
