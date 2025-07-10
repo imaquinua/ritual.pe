@@ -1,12 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, User, Search, Play, Star, Clock, Truck, Shield, ChefHat, Flame, MessageCircle, X, Plus, Minus } from 'lucide-react';
 
+interface ChatMessage {
+  type: 'user' | 'chispa';
+  text: string;
+}
+
+interface Product {
+  id: number;
+  name: string;
+  subtitle: string;
+  price: number;
+  originalPrice: number;
+  weight: string;
+  description: string;
+  image: string;
+  badge: string;
+  cookTime: string;
+  serves: string;
+  origin: string;
+  discount: string;
+  rating: number;
+}
+
+interface CartItem extends Product {
+  quantity: number;
+}
+
 const RitualEcommerce = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [showChispa, setShowChispa] = useState(false);
-  const [chatMessages, setChatMessages] = useState([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [userMessage, setUserMessage] = useState('');
 
   const products = [
@@ -139,7 +165,7 @@ const RitualEcommerce = () => {
     setUserMessage('');
   };
 
-  const addToCart = (product, quantity = 1) => {
+  const addToCart = (product: Product, quantity = 1) => {
     setCartItems(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
@@ -153,7 +179,7 @@ const RitualEcommerce = () => {
     });
   };
 
-  const updateQuantity = (productId, newQuantity) => {
+  const updateQuantity = (productId: number, newQuantity: number) => {
     if (newQuantity === 0) {
       setCartItems(prev => prev.filter(item => item.id !== productId));
     } else {
